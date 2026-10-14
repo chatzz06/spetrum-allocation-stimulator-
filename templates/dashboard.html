@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+        }
+
+        .settings {
+            position: absolute;
+            bottom: 30px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .settings a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 9px;
+        }
+
+        .settings a:hover {
+            background: #1e293b;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 270px;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOP CARDS ================= */
+
+        .top-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            color: #60708a;
+            font-size: 15px;
+            margin-bottom: 35px;
+        }
+
+        .live {
+            float: right;
+            color: #16a34a;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .live::before {
+            content: "●";
+            margin-right: 6px;
+        }
+
+        /* ================= FREQUENCY BAR ================= */
+
+        .frequency-scale {
+            display: flex;
+            justify-content: space-between;
+            color: #61708a;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .frequency-bar {
+            height: 90px;
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .frequency-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .frequency-item strong {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .frequency-item span {
+            font-size: 13px;
+        }
+
+        .fiveg {
+            background: #2864e6;
+        }
+
+        .fourg {
+            background: #793be5;
+        }
+
+        .iot {
+            background: #1395ae;
+        }
+
+        .wifi {
+            background: #ed590b;
+        }
+
+        .available {
+            background: #94a3b8;
+        }
+
+        /* ================= LEGEND ================= */
+
+        .legend {
+            display: flex;
+            gap: 25px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 14px;
+        }
+
+        .legend-box {
+            width: 13px;
+            height: 13px;
+            border-radius: 2px;
+        }
+
+        /* ================= UTILIZATION ================= */
+
+        .utilization {
+            text-align: center;
+        }
+
+        .circle {
+            width: 165px;
+            height: 165px;
+            margin: 5px auto 25px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #2864e6 0deg 173deg,
+                #e2e8f0 173deg 360deg
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .circle::before {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .circle-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .percentage {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .percentage-label {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .util-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .util-stat strong {
+            display: block;
+            font-size: 19px;
+        }
+
+        .util-stat span {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        /* ================= RECENT ALLOCATIONS ================= */
+
+        .allocation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .allocation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .allocation-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .allocation-subtitle {
+            color: #60708a;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .new-button {
+            background: #2864e6;
+            color: white;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .new-button:hover {
+            background: #1d4ed8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            color: #60708a;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 17px 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #d8f8e5;
+            color: #0f9f4b;
+        }
+
+        .conflict {
+            background: #fff0bf;
+            color: #c27a00;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .settings {
+                position: relative;
+                left: auto;
+                bottom: auto;
+                margin-top: 20px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .frequency-bar {
+                height: auto;
+                flex-direction: column;
+            }
+
+            .frequency-item {
+                padding: 20px;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .allocation-card {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span class="logo-icon">📡</span>
+            <span>SpectrumSim</span>
+        </div>
+
+        <nav class="menu">
+
+            <!-- Dashboard -->
+            <a href="{{ url_for('dashboard') }}" class="active">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Spectrum -->
+            <a href="{{ url_for('spectrum') }}">
+                <span class="menu-icon">▥</span>
+                <span>Spectrum</span>
+            </a>
+
+            <!-- Allocation -->
+            <a href="{{ url_for('allocation') }}">
+                <span class="menu-icon">⚙</span>
+                <span>Allocation</span>
+            </a>
+
+            <!-- Interference -->
+            <a href="{{ url_for('interference') }}">
+                <span class="menu-icon">⚠</span>
+                <span>Interference</span>
+            </a>
+
+            <!-- Simulation -->
+            <a href="{{ url_for('simulation') }}">
+                <span class="menu-icon">🧪</span>
+                <span>Simulation</span>
+            </a>
+
+            <!-- Reports -->
+            <a href="{{ url_for('reports') }}">
+                <span class="menu-icon">📈</span>
+                <span>Reports</span>
+            </a>
+
+        </nav>
+
+        <!-- Settings -->
+        <div class="settings">
+            <a href="#">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main">
+
+        <!-- TOP SECTION -->
+
+        <section class="top-section">
+
+            <!-- Frequency Allocation -->
+
+            <div class="card">
+
+                <span class="live">LIVE</span>
+
+                <div class="card-title">
+                    Frequency Allocation
+                </div>
+
+                <div class="card-subtitle">
+                    Current spectrum utilization
+                </div>
+
+                <div class="frequency-scale">
+                    <span>700</span>
+                    <span>750</span>
+                    <span>800</span>
+                    <span>850</span>
+                    <span>900</span>
+                    <span>950 MHz</span>
+                </div>
+
+                <div class="frequency-bar">
+
+                    <div class="frequency-item fiveg">
+                        <strong>5G</strong>
+                        <span>700–750</span>
+                    </div>
+
+                    <div class="frequency-item fourg">
+                        <strong>4G</strong>
+                        <span>750–800</span>
+                    </div>
+
+                    <div class="frequency-item iot">
+                        <strong>IoT</strong>
+                        <span>800–850</span>
+                    </div>
+
+                    <div class="frequency-item wifi">
+                        <strong>Wi-Fi</strong>
+                        <span>850–900</span>
+                    </div>
+
+                    <div class="frequency-item available">
+                        <strong>Available</strong>
+                        <span>900–950</span>
+                    </div>
+
+                </div>
+
+                <div class="legend">
+
+                    <div class="legend-item">
+                        <span class="legend-box fiveg"></span>
+                        5G
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box fourg"></span>
+                        4G
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box iot"></span>
+                        IoT
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box wifi"></span>
+                        Wi-Fi
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box available"></span>
+                        Available
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Spectrum Utilization -->
+
+            <div class="card utilization">
+
+                <div class="card-title" style="text-align:left;">
+                    Spectrum Utilization
+                </div>
+
+                <div class="card-subtitle" style="text-align:left;">
+                    Overall usage
+                </div>
+
+                <div class="circle">
+
+                    <div class="circle-content">
+
+                        <div class="percentage">
+                            48%
+                        </div>
+
+                        <div class="percentage-label">
+                            Utilized
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="util-stats">
+
+                    <div class="util-stat">
+                        <strong>120 MHz</strong>
+                        <span>Allocated</span>
+                    </div>
+
+                    <div class="util-stat">
+                        <strong>130 MHz</strong>
+                        <span>Available</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RECENT ALLOCATIONS ================= -->
+
+        <section class="allocation-card">
+
+            <div class="allocation-header">
+
+                <div>
+                    <div class="allocation-title">
+                        Recent Allocations
+                    </div>
+
+                    <div class="allocation-subtitle">
+                        Latest spectrum assignments
+                    </div>
+                </div>
+
+                <a href="{{ url_for('allocation') }}" class="new-button">
+                    + New Allocation
+                </a>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>User / Service</th>
+                        <th>Frequency</th>
+                        <th>Bandwidth</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>5G User 01</td>
+                        <td>700–720 MHz</td>
+                        <td>20 MHz</td>
+                        <td>5G</td>
+
+                        <td>
+                            <span class="status active">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>IoT Network</td>
+                        <td>820–840 MHz</td>
+                        <td>20 MHz</td>
+                        <td>IoT</td>
+
+                        <td>
+                            <span class="status active">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Wi-Fi Network</td>
+                        <td>850–870 MHz</td>
+                        <td>20 MHz</td>
+                        <td>Wi-Fi</td>
+
+                        <td>
+                            <span class="status conflict">
+                                Conflict
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

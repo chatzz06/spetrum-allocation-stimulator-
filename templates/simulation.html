@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Simulation</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            display: flex;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin: 8px 0 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: #2864e6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .algorithm {
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .algorithm h3 {
+            margin-bottom: 12px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .failed {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        @media(max-width:900px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        📡 SpectrumSim
+    </div>
+
+    <nav class="menu">
+
+        <a href="{{ url_for('dashboard') }}">
+            📊 Dashboard
+        </a>
+
+        <a href="{{ url_for('spectrum') }}">
+            ▥ Spectrum
+        </a>
+
+        <a href="{{ url_for('allocation') }}">
+            ⚙ Allocation
+        </a>
+
+        <a href="{{ url_for('interference') }}">
+            ⚠ Interference
+        </a>
+
+        <a href="{{ url_for('simulation') }}" class="active">
+            🧪 Simulation
+        </a>
+
+        <a href="{{ url_for('reports') }}">
+            📈 Reports
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="title">
+        Spectrum Simulation
+    </div>
+
+    <div class="subtitle">
+        Compare First Fit and Best Fit allocation algorithms
+    </div>
+
+
+    <div class="grid">
+
+        <!-- INPUT -->
+
+        <div class="card">
+
+            <h2>Simulation Input</h2>
+
+            <div class="description">
+                Enter the bandwidth required by a user.
+            </div>
+
+            <form method="POST"
+                  action="{{ url_for('simulation') }}">
+
+                <label>
+                    Required Bandwidth (MHz)
+                </label>
+
+                <input
+                    type="number"
+                    name="bandwidth"
+                    value="20"
+                    min="1"
+                    max="250"
+                    required
+                >
+
+                <button type="submit">
+                    Run Simulation
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULTS -->
+
+        <div class="card">
+
+            <h2>Simulation Results</h2>
+
+            <div class="description">
+                Comparison of First Fit and Best Fit.
+            </div>
+
+            {% if simulation_result %}
+
+            <div class="algorithm">
+
+                <h3>
+                    First Fit Algorithm
+                </h3>
+
+                {% if simulation_result.first_fit.success %}
+
+                <div class="success">
+
+                    ✓ Allocation Successful
+
+                    <br><br>
+
+                    Frequency:
+                    {{ simulation_result.first_fit.allocation[0] }}
+                    –
+                    {{ simulation_result.first_fit.allocation[1] }}
+                    MHz
+
+                </div>
+
+                {% else %}
+
+                <div class="failed">
+                    ✕ Allocation Failed
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="algorithm">
+
+                <h3>
+                    Best Fit Algorithm
+                </h3>
+
+                {% if simulation_result.best_fit.success %}
+
+                <div class="success">
+
+                    ✓ Allocation Successful
+
+                    <br><br>
+
+                    Frequency:
+                    {{ simulation_result.best_fit.allocation[0] }}
+                    –
+                    {{ simulation_result.best_fit.allocation[1] }}
+                    MHz
+
+                </div>
+
+                {% else %}
+
+                <div class="failed">
+                    ✕ Allocation Failed
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% else %}
+
+            <div style="
+                background:#eff6ff;
+                color:#1e40af;
+                padding:18px;
+                border-radius:10px;
+            ">
+                Enter bandwidth and click
+                <strong>Run Simulation</strong>.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

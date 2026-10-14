@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Settings</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a,
+        .settings-link {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            font-size: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .menu a:hover,
+        .settings-link:hover {
+            background: #1e293b;
+        }
+
+        .menu a.active,
+        .settings-link.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .settings {
+            position: absolute;
+            bottom: 30px;
+            left: 16px;
+            right: 16px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+            min-height: 100vh;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-top: 8px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            margin-bottom: 22px;
+            max-width: 900px;
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #64748b;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        select,
+        input {
+            padding: 10px 14px;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            background: white;
+            min-width: 160px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 25px;
+            display: inline-block;
+        }
+
+        .toggle input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background: #cbd5e1;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 19px;
+            height: 19px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+        .toggle input:checked + .slider {
+            background: #2864e6;
+        }
+
+        .toggle input:checked + .slider:before {
+            transform: translateX(23px);
+        }
+
+        .button-row {
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #2864e6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .reset {
+            background: #e2e8f0;
+            color: #172033;
+        }
+
+        .reset:hover {
+            background: #cbd5e1;
+        }
+
+        .about {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 18px;
+            border-radius: 10px;
+            color: #1e40af;
+        }
+
+        @media(max-width: 800px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        📡 SpectrumSim
+    </div>
+
+    <nav class="menu">
+
+        <a href="{{ url_for('dashboard') }}">
+            📊 Dashboard
+        </a>
+
+        <a href="{{ url_for('spectrum') }}">
+            ▥ Spectrum
+        </a>
+
+        <a href="{{ url_for('allocation') }}">
+            ⚙ Allocation
+        </a>
+
+        <a href="{{ url_for('interference') }}">
+            ⚠ Interference
+        </a>
+
+        <a href="{{ url_for('simulation') }}">
+            🧪 Simulation
+        </a>
+
+        <a href="{{ url_for('reports') }}">
+            📈 Reports
+        </a>
+
+    </nav>
+
+
+    <div class="settings">
+
+        <a href="{{ url_for('settings') }}"
+           class="settings-link active">
+
+            ⚙
+            <span>Settings</span>
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+    <div class="title">
+        Settings
+    </div>
+
+    <div class="subtitle">
+        Configure your SpectrumSim simulator
+    </div>
+
+
+    <!-- GENERAL SETTINGS -->
+
+    <div class="card">
+
+        <h2>
+            General Settings
+        </h2>
+
+        <div class="card-description">
+            Configure basic simulator preferences.
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Frequency Unit
+                </h3>
+
+                <p>
+                    Unit used for displaying frequency values.
+                </p>
+
+            </div>
+
+            <select id="frequencyUnit">
+
+                <option value="MHz">
+                    MHz
+                </option>
+
+                <option value="GHz">
+                    GHz
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Default Algorithm
+                </h3>
+
+                <p>
+                    Algorithm selected by default for allocation.
+                </p>
+
+            </div>
+
+            <select id="defaultAlgorithm">
+
+                <option value="first_fit">
+                    First Fit
+                </option>
+
+                <option value="best_fit">
+                    Best Fit
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Live Updates
+                </h3>
+
+                <p>
+                    Enable real-time simulator updates.
+                </p>
+
+            </div>
+
+            <label class="toggle">
+
+                <input
+                    type="checkbox"
+                    id="liveUpdates"
+                    checked
+                >
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Interference Alerts
+                </h3>
+
+                <p>
+                    Show warnings when frequency overlap occurs.
+                </p>
+
+            </div>
+
+            <label class="toggle">
+
+                <input
+                    type="checkbox"
+                    id="interferenceAlerts"
+                    checked
+                >
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button onclick="saveSettings()">
+                Save Settings
+            </button>
+
+            <button
+                class="reset"
+                onclick="resetSettings()"
+            >
+                Reset
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SPECTRUM SETTINGS -->
+
+    <div class="card">
+
+        <h2>
+            Spectrum Configuration
+        </h2>
+
+        <div class="card-description">
+            Configure the spectrum range used by the simulator.
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Minimum Frequency
+                </h3>
+
+                <p>
+                    Starting frequency of the spectrum.
+                </p>
+
+            </div>
+
+            <input
+                type="number"
+                id="minFrequency"
+                value="700"
+            >
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <h3>
+                    Maximum Frequency
+                </h3>
+
+                <p>
+                    Ending frequency of the spectrum.
+                </p>
+
+            </div>
+
+            <input
+                type="number"
+                id="maxFrequency"
+                value="950"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- ABOUT -->
+
+    <div class="card">
+
+        <h2>
+            About SpectrumSim
+        </h2>
+
+        <br>
+
+        <div class="about">
+
+            <strong>SpectrumSim</strong>
+
+            <br><br>
+
+            Intelligent Spectrum Allocation Simulator
+
+            <br>
+
+            Version 1.0
+
+            <br><br>
+
+            This project demonstrates spectrum allocation,
+            interference detection, and comparison of
+            First Fit and Best Fit algorithms.
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script>
+
+function saveSettings() {
+
+    const minFrequency =
+        document.getElementById("minFrequency").value;
+
+    const maxFrequency =
+        document.getElementById("maxFrequency").value;
+
+    if (
+        Number(minFrequency) >=
+        Number(maxFrequency)
+    ) {
+
+        alert(
+            "Minimum frequency must be less than maximum frequency."
+        );
+
+        return;
+
+    }
+
+    localStorage.setItem(
+        "frequencyUnit",
+        document.getElementById("frequencyUnit").value
+    );
+
+    localStorage.setItem(
+        "defaultAlgorithm",
+        document.getElementById("defaultAlgorithm").value
+    );
+
+    localStorage.setItem(
+        "liveUpdates",
+        document.getElementById("liveUpdates").checked
+    );
+
+    localStorage.setItem(
+        "interferenceAlerts",
+        document.getElementById("interferenceAlerts").checked
+    );
+
+    localStorage.setItem(
+        "minFrequency",
+        minFrequency
+    );
+
+    localStorage.setItem(
+        "maxFrequency",
+        maxFrequency
+    );
+
+    alert("Settings saved successfully.");
+
+}
+
+
+function resetSettings() {
+
+    document.getElementById("frequencyUnit").value =
+        "MHz";
+
+    document.getElementById("defaultAlgorithm").value =
+        "first_fit";
+
+    document.getElementById("liveUpdates").checked =
+        true;
+
+    document.getElementById("interferenceAlerts").checked =
+        true;
+
+    document.getElementById("minFrequency").value =
+        700;
+
+    document.getElementById("maxFrequency").value =
+        950;
+
+    localStorage.clear();
+
+    alert("Settings reset successfully.");
+
+}
+
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const unit =
+            localStorage.getItem("frequencyUnit");
+
+        const algorithm =
+            localStorage.getItem("defaultAlgorithm");
+
+        const live =
+            localStorage.getItem("liveUpdates");
+
+        const alerts =
+            localStorage.getItem("interferenceAlerts");
+
+        const min =
+            localStorage.getItem("minFrequency");
+
+        const max =
+            localStorage.getItem("maxFrequency");
+
+
+        if (unit) {
+
+            document.getElementById(
+                "frequencyUnit"
+            ).value = unit;
+
+        }
+
+
+        if (algorithm) {
+
+            document.getElementById(
+                "defaultAlgorithm"
+            ).value = algorithm;
+
+        }
+
+
+        if (live !== null) {
+
+            document.getElementById(
+                "liveUpdates"
+            ).checked = live === "true";
+
+        }
+
+
+        if (alerts !== null) {
+
+            document.getElementById(
+                "interferenceAlerts"
+            ).checked = alerts === "true";
+
+        }
+
+
+        if (min) {
+
+            document.getElementById(
+                "minFrequency"
+            ).value = min;
+
+        }
+
+
+        if (max) {
+
+            document.getElementById(
+                "maxFrequency"
+            ).value = max;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

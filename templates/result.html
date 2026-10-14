@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Allocation Result</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+        }
+
+        .settings {
+            position: absolute;
+            bottom: 30px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .settings a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 9px;
+        }
+
+        .settings a:hover {
+            background: #1e293b;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        /* ================= RESULT ================= */
+
+        .result-card {
+            max-width: 900px;
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: #16a34a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .result-message {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        /* ================= DETAILS ================= */
+
+        .details-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .detail-label {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .detail-value {
+            font-size: 17px;
+            font-weight: bold;
+            color: #172033;
+        }
+
+        /* ================= FREQUENCY RESULT ================= */
+
+        .frequency-result {
+            margin-top: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .frequency-result h3 {
+            color: #1d4ed8;
+            margin-bottom: 8px;
+        }
+
+        .frequency-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #172033;
+        }
+
+        .frequency-description {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .button {
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .primary {
+            background: #2864e6;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary {
+            background: #e8edf5;
+            color: #334155;
+        }
+
+        .secondary:hover {
+            background: #dce3ed;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .settings {
+                position: relative;
+                left: auto;
+                bottom: auto;
+                margin-top: 20px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span class="logo-icon">📡</span>
+            <span>SpectrumSim</span>
+        </div>
+
+        <nav class="menu">
+
+            <a href="{{ url_for('dashboard') }}">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('spectrum') }}">
+                <span class="menu-icon">▥</span>
+                <span>Spectrum</span>
+            </a>
+
+            <a href="{{ url_for('allocation') }}">
+                <span class="menu-icon">⚙</span>
+                <span>Allocation</span>
+            </a>
+
+            <a href="{{ url_for('interference') }}">
+                <span class="menu-icon">⚠</span>
+                <span>Interference</span>
+            </a>
+
+            <a href="{{ url_for('simulation') }}">
+                <span class="menu-icon">🧪</span>
+                <span>Simulation</span>
+            </a>
+
+            <a href="{{ url_for('reports') }}" class="active">
+                <span class="menu-icon">📈</span>
+                <span>Reports</span>
+            </a>
+
+        </nav>
+
+        <div class="settings">
+
+            <a href="#">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <div class="page-header">
+
+            <div class="page-title">
+                Allocation Result
+            </div>
+
+            <div class="page-subtitle">
+                Spectrum allocation details and result
+            </div>
+
+        </div>
+
+
+        <div class="result-card">
+
+            <!-- SUCCESS -->
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <div class="result-title">
+                Spectrum Allocation Successful
+            </div>
+
+            <div class="result-message">
+                The requested spectrum has been successfully allocated.
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="status-box">
+                ✓ Allocation Status: ACTIVE
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div class="details-title">
+                Allocation Details
+            </div>
+
+            <div class="details-grid">
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        User / Service
+                    </div>
+
+                    <div class="detail-value">
+                        {{ user|default("5G User 01") }}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Service Type
+                    </div>
+
+                    <div class="detail-value">
+                        {{ service_type|default("5G") }}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Start Frequency
+                    </div>
+
+                    <div class="detail-value">
+                        {{ frequency|default("700") }} MHz
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Bandwidth
+                    </div>
+
+                    <div class="detail-value">
+                        {{ bandwidth|default("20") }} MHz
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Allocation Algorithm
+                    </div>
+
+                    <div class="detail-value">
+                        {{ algorithm|default("First Fit") }}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Status
+                    </div>
+
+                    <div class="detail-value">
+                        Active
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FREQUENCY -->
+
+            <div class="frequency-result">
+
+                <h3>
+                    Allocated Frequency Range
+                </h3>
+
+                <div class="frequency-number">
+
+                    {{ frequency|default("700") }} –
+                    {{ end_frequency|default("720") }} MHz
+
+                </div>
+
+                <div class="frequency-description">
+                    Allocated spectrum bandwidth:
+                    {{ bandwidth|default("20") }} MHz
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <a
+                    href="{{ url_for('allocation') }}"
+                    class="button primary"
+                >
+                    + New Allocation
+                </a>
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="button secondary"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

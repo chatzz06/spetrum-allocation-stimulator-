@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Allocation</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+        }
+
+        .settings {
+            position: absolute;
+            bottom: 30px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .settings a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 9px;
+        }
+
+        .settings a:hover {
+            background: #1e293b;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        /* ================= GRID ================= */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2864e6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .allocate-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: #2864e6;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+
+        .allocate-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* ================= ALGORITHM ================= */
+
+        .algorithm-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .algorithm-box h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .algorithm-box p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ================= AVAILABLE SPECTRUM ================= */
+
+        .spectrum-list {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+        .spectrum-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .spectrum-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .spectrum-range {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .available-badge {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ================= INFO CARDS ================= */
+
+        .info-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .info-box {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-box .number {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .info-box .label {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .settings {
+                position: relative;
+                left: auto;
+                bottom: auto;
+                margin-top: 20px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-row,
+            .info-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <span class="logo-icon">📡</span>
+            <span>SpectrumSim</span>
+        </div>
+
+        <nav class="menu">
+
+            <a href="{{ url_for('dashboard') }}">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('spectrum') }}">
+                <span class="menu-icon">▥</span>
+                <span>Spectrum</span>
+            </a>
+
+            <a href="{{ url_for('allocation') }}" class="active">
+                <span class="menu-icon">⚙</span>
+                <span>Allocation</span>
+            </a>
+
+            <a href="{{ url_for('interference') }}">
+                <span class="menu-icon">⚠</span>
+                <span>Interference</span>
+            </a>
+
+            <a href="{{ url_for('simulation') }}">
+                <span class="menu-icon">🧪</span>
+                <span>Simulation</span>
+            </a>
+
+            <a href="{{ url_for('reports') }}">
+                <span class="menu-icon">📈</span>
+                <span>Reports</span>
+            </a>
+
+        </nav>
+
+        <div class="settings">
+            <a href="#">
+                <span class="menu-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <div class="page-header">
+
+            <div class="page-title">
+                Spectrum Allocation
+            </div>
+
+            <div class="page-subtitle">
+                Allocate available frequency bands to users and services
+            </div>
+
+        </div>
+
+
+        <div class="content-grid">
+
+            <!-- ================= ALLOCATION FORM ================= -->
+
+            <div class="card">
+
+                <h2>New Allocation</h2>
+
+                <div class="card-description">
+                    Enter the required information to allocate spectrum.
+                </div>
+
+                <form method="POST" action="{{ url_for('allocation') }}">
+
+                    <div class="form-group">
+
+                        <label for="user">
+                            User / Service Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="user"
+                            name="user"
+                            placeholder="Example: 5G User 01"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="type">
+                            Service Type
+                        </label>
+
+                        <select id="type" name="type" required>
+
+                            <option value="">
+                                Select service type
+                            </option>
+
+                            <option value="5G">
+                                5G
+                            </option>
+
+                            <option value="4G">
+                                4G
+                            </option>
+
+                            <option value="IoT">
+                                IoT
+                            </option>
+
+                            <option value="Wi-Fi">
+                                Wi-Fi
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="frequency">
+                                Start Frequency (MHz)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="frequency"
+                                name="frequency"
+                                placeholder="700"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="bandwidth">
+                                Bandwidth (MHz)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="bandwidth"
+                                name="bandwidth"
+                                placeholder="20"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="algorithm">
+                            Allocation Algorithm
+                        </label>
+
+                        <select id="algorithm" name="algorithm">
+
+                            <option value="first_fit">
+                                First Fit
+                            </option>
+
+                            <option value="best_fit">
+                                Best Fit
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button type="submit" class="allocate-button">
+                        Allocate Spectrum
+                    </button>
+
+                </form>
+
+
+                <div class="algorithm-box">
+
+                    <h3>
+                        Allocation Algorithm
+                    </h3>
+
+                    <p>
+                        The simulator supports First Fit and Best Fit
+                        allocation algorithms to efficiently assign
+                        available spectrum bands.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= AVAILABLE SPECTRUM ================= -->
+
+            <div class="card">
+
+                <h2>Available Spectrum</h2>
+
+                <div class="card-description">
+                    Currently available frequency ranges.
+                </div>
+
+
+                <div class="spectrum-list">
+
+                    <div class="spectrum-item">
+
+                        <div>
+                            <div class="spectrum-name">
+                                Band A
+                            </div>
+
+                            <div class="spectrum-range">
+                                700 – 750 MHz
+                            </div>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="spectrum-item">
+
+                        <div>
+                            <div class="spectrum-name">
+                                Band B
+                            </div>
+
+                            <div class="spectrum-range">
+                                750 – 800 MHz
+                            </div>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="spectrum-item">
+
+                        <div>
+                            <div class="spectrum-name">
+                                Band C
+                            </div>
+
+                            <div class="spectrum-range">
+                                800 – 850 MHz
+                            </div>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="spectrum-item">
+
+                        <div>
+                            <div class="spectrum-name">
+                                Band D
+                            </div>
+
+                            <div class="spectrum-range">
+                                850 – 900 MHz
+                            </div>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="spectrum-item">
+
+                        <div>
+                            <div class="spectrum-name">
+                                Band E
+                            </div>
+
+                            <div class="spectrum-range">
+                                900 – 950 MHz
+                            </div>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= INFORMATION ================= -->
+
+        <div class="info-row">
+
+            <div class="info-box">
+
+                <div class="number">
+                    250 MHz
+                </div>
+
+                <div class="label">
+                    Total Spectrum
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="number">
+                    120 MHz
+                </div>
+
+                <div class="label">
+                    Allocated Spectrum
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="number">
+                    130 MHz
+                </div>
+
+                <div class="label">
+                    Available Spectrum
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

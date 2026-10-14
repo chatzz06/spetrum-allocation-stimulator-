@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SpectrumSim - Reports</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            display: flex;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin: 8px 0 25px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .stat-number {
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            text-align: left;
+            color: #64748b;
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 14px;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 11px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .delete {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 45px;
+        }
+
+        @media(max-width:900px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        📡 SpectrumSim
+    </div>
+
+    <nav class="menu">
+
+        <a href="{{ url_for('dashboard') }}">
+            📊 Dashboard
+        </a>
+
+        <a href="{{ url_for('spectrum') }}">
+            ▥ Spectrum
+        </a>
+
+        <a href="{{ url_for('allocation') }}">
+            ⚙ Allocation
+        </a>
+
+        <a href="{{ url_for('interference') }}">
+            ⚠ Interference
+        </a>
+
+        <a href="{{ url_for('simulation') }}">
+            🧪 Simulation
+        </a>
+
+        <a href="{{ url_for('reports') }}" class="active">
+            📈 Reports
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="title">
+        Spectrum Reports
+    </div>
+
+    <div class="subtitle">
+        View spectrum allocation history and statistics
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Allocations
+            </div>
+
+            <div class="stat-number">
+                {{ allocations|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Allocated Bandwidth
+            </div>
+
+            <div class="stat-number">
+
+                {% set total = namespace(value=0) %}
+
+                {% for item in allocations %}
+
+                    {% set total.value =
+                        total.value + item["bandwidth"] %}
+
+                {% endfor %}
+
+                {{ total.value }} MHz
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Active Allocations
+            </div>
+
+            <div class="stat-number">
+                {{ allocations|length }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- REPORT TABLE -->
+
+    <div class="card">
+
+        <h2>
+            Allocation History
+        </h2>
+
+        {% if allocations %}
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>User / Service</th>
+                    <th>Type</th>
+                    <th>Frequency</th>
+                    <th>Bandwidth</th>
+                    <th>Algorithm</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for item in allocations %}
+
+                <tr>
+
+                    <td>
+                        {{ item["id"] }}
+                    </td>
+
+                    <td>
+                        {{ item["user"] }}
+                    </td>
+
+                    <td>
+                        {{ item["service_type"] }}
+                    </td>
+
+                    <td>
+                        {{ item["start_frequency"] }}
+                        –
+                        {{ item["end_frequency"] }}
+                        MHz
+                    </td>
+
+                    <td>
+                        {{ item["bandwidth"] }}
+                        MHz
+                    </td>
+
+                    <td>
+                        {{ item["algorithm"] }}
+                    </td>
+
+                    <td>
+                        <span class="active">
+                            {{ item["status"] }}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'delete_allocation',
+                                allocation_id=item['id']
+                            ) }}"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete"
+                                onclick="return confirm(
+                                    'Delete this allocation?'
+                                );"
+                            >
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty">
+
+            No allocation records found.
+
+            <br><br>
+
+            Create an allocation first.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

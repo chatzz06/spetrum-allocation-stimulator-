@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpectrumSim - Interference</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: #111827;
+            padding: 25px 16px;
+            color: white;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px;
+            margin-bottom: 35px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #dbe4f0;
+            padding: 15px 18px;
+            border-radius: 9px;
+            font-size: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .menu a:hover {
+            background: #1e293b;
+        }
+
+        .menu a.active {
+            background: #2864e6;
+            color: white;
+        }
+
+        .main {
+            margin-left: 270px;
+            padding: 35px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin: 8px 0 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2864e6;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: #2864e6;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 22px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .status {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .no-interference {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .low {
+            background: #fef3c7;
+            color: #a16207;
+        }
+
+        .medium {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 18px;
+            border-radius: 10px;
+            color: #1e40af;
+        }
+
+        @media(max-width: 900px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        📡 SpectrumSim
+    </div>
+
+    <nav class="menu">
+
+        <a href="{{ url_for('dashboard') }}">
+            📊 Dashboard
+        </a>
+
+        <a href="{{ url_for('spectrum') }}">
+            ▥ Spectrum
+        </a>
+
+        <a href="{{ url_for('allocation') }}">
+            ⚙ Allocation
+        </a>
+
+        <a href="{{ url_for('interference') }}" class="active">
+            ⚠ Interference
+        </a>
+
+        <a href="{{ url_for('simulation') }}">
+            🧪 Simulation
+        </a>
+
+        <a href="{{ url_for('reports') }}">
+            📈 Reports
+        </a>
+
+    </nav>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="title">
+        Interference Detection
+    </div>
+
+    <div class="subtitle">
+        Detect frequency overlap between spectrum allocations
+    </div>
+
+
+    <div class="grid">
+
+        <!-- INPUT -->
+
+        <div class="card">
+
+            <h2>Check Interference</h2>
+
+            <div class="description">
+                Enter details for two spectrum allocations.
+            </div>
+
+            <form method="POST"
+                  action="{{ url_for('interference') }}">
+
+                <h3 style="margin-bottom:15px;">
+                    Allocation 1
+                </h3>
+
+                <div class="form-group">
+
+                    <label>Start Frequency (MHz)</label>
+
+                    <input
+                        type="number"
+                        name="start1"
+                        placeholder="700"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Bandwidth (MHz)</label>
+
+                    <input
+                        type="number"
+                        name="bandwidth1"
+                        placeholder="50"
+                        required
+                    >
+
+                </div>
+
+
+                <h3 style="margin:25px 0 15px;">
+                    Allocation 2
+                </h3>
+
+                <div class="form-group">
+
+                    <label>Start Frequency (MHz)</label>
+
+                    <input
+                        type="number"
+                        name="start2"
+                        placeholder="730"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Bandwidth (MHz)</label>
+
+                    <input
+                        type="number"
+                        name="bandwidth2"
+                        placeholder="40"
+                        required
+                    >
+
+                </div>
+
+                <button type="submit">
+                    Check Interference
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div class="card">
+
+            <h2>Interference Result</h2>
+
+            <div class="description">
+                Analysis of selected frequency ranges.
+            </div>
+
+            {% if result %}
+
+            <div class="result-box">
+
+                <div class="result-row">
+                    <span>Allocation 1</span>
+
+                    <strong>
+                        {{ result.start1 }}
+                        –
+                        {{ result.end1 }}
+                        MHz
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Allocation 2</span>
+
+                    <strong>
+                        {{ result.start2 }}
+                        –
+                        {{ result.end2 }}
+                        MHz
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Overlap</span>
+
+                    <strong>
+                        {{ result.overlap }} MHz
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Interference</span>
+
+                    <strong>
+                        {{ result.interference_level }}%
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Status</span>
+
+                    {% if result.status == "No Interference" %}
+
+                    <span class="status no-interference">
+                        {{ result.status }}
+                    </span>
+
+                    {% elif result.status == "Low Interference" %}
+
+                    <span class="status low">
+                        {{ result.status }}
+                    </span>
+
+                    {% elif result.status == "Medium Interference" %}
+
+                    <span class="status medium">
+                        {{ result.status }}
+                    </span>
+
+                    {% else %}
+
+                    <span class="status high">
+                        {{ result.status }}
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="info">
+                Enter two frequency allocations and click
+                <strong>Check Interference</strong>.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
